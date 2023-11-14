@@ -1,1 +1,9 @@
-export class CreateShopDto {}
+import { IsString } from 'class-validator';
+
+export class CreateShopDto {
+  @IsString()
+  name: string;
+
+  @IsString()
+  contact: string;
+}

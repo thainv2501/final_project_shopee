@@ -26,7 +26,7 @@ export class User extends baseEntity {
   @Column()
   password: string;
 
-  @OneToMany(() => Contact, (contact) => contact.user, { cascade: true })
+  @OneToMany(() => Contact, (contact) => contact.user, { onDelete: 'CASCADE' })
   contacts?: Contact[];
 
   @Column({ type: 'enum', enum: Status, default: Status.Inactive })

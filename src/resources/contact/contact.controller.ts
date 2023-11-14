@@ -1,32 +1,59 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
+import { AuthGuard } from 'src/auth/guard/auth.guard';
+import { Request } from 'express';
 
-@Controller('contact')
+@Controller('contacts')
 export class ContactController {
   constructor(private readonly contactService: ContactService) {}
 
+  @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createContactDto: CreateContactDto) {
-    return this.contactService.create(createContactDto);
+  create(@Req() request: Request, @Body() createContactDto: CreateContactDto) {
+    return this.contactService.create(request, createContactDto);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.contactService.findAll();
+  getContacts() {
+    return this.contactService.getContacts(null, ['user']);
   }
 
+  @UseGuards(AuthGuard)
+  @Get('/getContacts/:userId')
+  getContactsOfUser(@Param('userId') userId: string) {
+    return this.contactService.getContactsByUserId(userId);
+  }
+
+  @UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.contactService.findOne(+id);
+  getContact(@Req() request: Request, @Param('id') id: string) {
+    return this.contactService.getContact({ id });
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateContactDto: UpdateContactDto) {
-    return this.contactService.update(+id, updateContactDto);
+  update(
+    @Req() request: Request,
+    @Param('id') id: string,
+    @Body() updateContactDto: UpdateContactDto,
+  ) {
+    return this.contactService.update(request, id, updateContactDto);
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.contactService.remove(+id);

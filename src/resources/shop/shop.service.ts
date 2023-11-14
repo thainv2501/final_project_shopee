@@ -1,10 +1,20 @@
+import { User } from './../user/entities/user.entity';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
-
+import { Shop } from './entities/shop.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 @Injectable()
 export class ShopService {
-  create(createShopDto: CreateShopDto) {
+  constructor(
+    @InjectRepository(Shop)
+    private shopRepository: Repository<Shop>,
+  ) {}
+
+  async create(request, createShopDto: CreateShopDto) {
+    const currentUser: User = request[process.env.CURRENT_USER];
+    // const contact = this;
     return 'This action adds a new shop';
   }
 
@@ -12,11 +22,19 @@ export class ShopService {
     return `This action returns all shop`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} shop`;
+  async getShop(
+    fields: FindOptionsWhere<Shop> | FindOptionsWhere<Shop>[],
+    relationOptions?: string[],
+  ) {
+    return await this.shopRepository.findOne({
+      where: fields,
+      relations: relationOptions,
+    });
   }
 
-  update(id: number, updateShopDto: UpdateShopDto) {
+  async update(request, id: string, updateShopDto: UpdateShopDto) {
+    const shop = await this.getShop({ id });
+
     return `This action updates a #${id} shop`;
   }
 
