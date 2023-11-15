@@ -15,7 +15,7 @@ import { UpdateShopDto } from './dto/update-shop.dto';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 import { Request } from 'express';
 
-@Controller('shop')
+@Controller('shops')
 export class ShopController {
   constructor(private readonly shopService: ShopService) {}
 

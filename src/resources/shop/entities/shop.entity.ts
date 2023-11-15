@@ -6,6 +6,7 @@ import {
   ManyToMany,
   JoinTable,
   OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { baseEntity } from 'src/common/entities/base.entity';
@@ -22,10 +23,8 @@ export class Shop extends baseEntity {
   name: string;
 
   @OneToOne(() => Contact)
+  @JoinColumn()
   contact: Contact;
-
-  @OneToOne(() => User)
-  owner: User;
 
   @Column({ type: 'enum', enum: Status, default: Status.Active })
   status: Status;

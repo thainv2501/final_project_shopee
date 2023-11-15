@@ -10,9 +10,5 @@ export class UpdateShopDto extends PartialType(CreateShopDto) {
 
   @IsString()
   @IsOptional()
-  contact?: string;
-
-  @IsString()
-  @IsOptional()
   status: Status;
 }
