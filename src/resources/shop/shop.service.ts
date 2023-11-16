@@ -17,8 +17,28 @@ export class ShopService {
     private dataSource: DataSource,
   ) {}
 
+  async getShopByUser(user: User): Promise<Shop | null> {
+    try {
+      // Use TypeORM query to find the shop associated with the provided user
+      const shop = await this.shopRepository
+        .createQueryBuilder('shop')
+        .leftJoinAndSelect('shop.owner', 'owner')
+        .where('owner.id = :userId', { userId: user.id })
+        .getOne();
+
+      return shop || null;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async create(request, createShopDto: CreateShopDto) {
+    const currentUser: User = request[process.env.CURRENT_USER];
     const queryRunner = await this.dataSource.createQueryRunner();
+    const hasShop = await this.getShopByUser(currentUser);
+    if (hasShop) {
+      throw new BadRequestException('User has shop, can not create more ');
+    }
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
@@ -28,6 +48,7 @@ export class ShopService {
       );
       const shop = await this.shopRepository.create(createShopDto);
       shop.contact = contact;
+      shop.owner = currentUser;
       await this.shopRepository.save(shop);
       await queryRunner.commitTransaction();
       return { shop };
@@ -56,12 +77,12 @@ export class ShopService {
   }
 
   ownerOfShop(shop: Shop, userId: string) {
-    return shop.contact.user.id == userId;
+    return shop.owner.id == userId;
   }
 
   async update(request, id: string, updateShopDto: UpdateShopDto) {
     const currentUser: User = request[process.env.CURRENT_USER];
-    const shop = await this.getShop({ id }, ['contact', 'contact.user']);
+    const shop = await this.getShop({ id }, ['owner']);
     if (!shop) {
       throw new Error('Shop nit found');
     }

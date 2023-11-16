@@ -34,7 +34,7 @@ export class ShopController {
   @UseGuards(AuthGuard)
   @Get(':id')
   getShop(@Param('id') id: string) {
-    return this.shopService.getShop({ id });
+    return this.shopService.getShop({ id }, ['products']);
   }
 
   @UseGuards(AuthGuard)
