@@ -29,6 +29,6 @@ export class User extends baseEntity {
   @OneToMany(() => Contact, (contact) => contact.user, { onDelete: 'CASCADE' })
   contacts?: Contact[];
 
-  @Column({ type: 'enum', enum: Status, default: Status.Inactive })
+  @Column({ type: 'enum', enum: Status, default: Status.Active })
   status: Status;
 }

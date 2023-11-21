@@ -33,7 +33,10 @@ export class AuthService {
     }
     delete foundUser.password;
 
-    const access_token = await this.jwtService.signAsync({ foundUser });
+    const access_token = await this.jwtService.signAsync(
+      { foundUser },
+      { expiresIn: '7d', secret: process.env.ACCESS_TOKEN_SECRET },
+    );
     return { access_token, signInUser: foundUser };
   }
 }

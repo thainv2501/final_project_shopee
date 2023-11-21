@@ -13,20 +13,12 @@ import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { CategoryService } from '../category/category.service';
 import { Category } from '../category/entities/category.entity';
+import { CategoryModule } from '../category/category.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Product, Shop, Contact, User, Category]),
-    ShopModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Product]), ShopModule, CategoryModule],
   controllers: [ProductController],
-  providers: [
-    ProductService,
-    ShopService,
-    JwtService,
-    ContactService,
-    UserService,
-    CategoryService,
-  ],
+  providers: [ProductService],
+  exports: [ProductService],
 })
 export class ProductModule {}

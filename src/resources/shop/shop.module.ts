@@ -8,10 +8,12 @@ import { ContactService } from '../contact/contact.service';
 import { Contact } from '../contact/entities/contact.entity';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
+import { ContactModule } from '../contact/contact.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Shop, Contact, User])],
+  imports: [TypeOrmModule.forFeature([Shop]), ContactModule],
   controllers: [ShopController],
-  providers: [ShopService, JwtService, ContactService, UserService],
+  providers: [ShopService],
+  exports: [ShopService],
 })
 export class ShopModule {}

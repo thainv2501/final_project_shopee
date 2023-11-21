@@ -1,4 +1,4 @@
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -10,11 +10,15 @@ import { ProductModule } from './resources/product/product.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseConfig } from './db/data.config';
 import { ContactModule } from './resources/contact/contact.module';
-import { JwtService } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './exception/all.exception';
 import { CategoryModule } from './resources/category/category.module';
 import { VoucherModule } from './resources/voucher/voucher.module';
+import { OrderModule } from './resources/order/order.module';
+import { OrderDetailModule } from './resources/order_detail/order_detail.module';
+import { ShoppingCartModule } from './resources/shopping_cart/shopping_cart.module';
+import { CartModule } from './resources/cart/cart.module';
 
 @Module({
   imports: [
@@ -26,6 +30,10 @@ import { VoucherModule } from './resources/voucher/voucher.module';
     TypeOrmModule.forRootAsync({
       useClass: DatabaseConfig,
     }),
+    // JwtModule.register({
+    //   global: true,
+    //   signOptions: { expiresIn: '7d' },
+    // }),
     UserModule,
     AuthModule,
     ShopModule,
@@ -33,11 +41,14 @@ import { VoucherModule } from './resources/voucher/voucher.module';
     ContactModule,
     CategoryModule,
     VoucherModule,
+    OrderModule,
+    OrderDetailModule,
+    // ShoppingCartModule,
+    CartModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    JwtService,
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,

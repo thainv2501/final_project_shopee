@@ -25,8 +25,8 @@ export class AuthGuard implements CanActivate {
       // so that we can access it in our route handlers
       request[process.env.CURRENT_USER] = payload.foundUser;
       // console.log({ user: request.user });
-    } catch {
-      throw new UnauthorizedException();
+    } catch (error) {
+      throw new UnauthorizedException({ error });
     }
     return true;
   }
