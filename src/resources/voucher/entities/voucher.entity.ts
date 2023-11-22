@@ -5,6 +5,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -15,22 +16,25 @@ export class Voucher extends baseEntity {
   id: string;
 
   @Column()
+  name: string;
+
+  @Column()
   discount: number;
 
   @Column({ type: 'timestamp' })
   from: Date;
 
   @Column({ type: 'timestamp' })
-  to: Date;
+  expiredIn: Date;
 
   @Column()
   quantity: number;
 
-  @OneToOne(() => Shop)
+  @ManyToOne(() => Shop)
   @JoinColumn()
   shop: Shop;
 
-  @OneToOne(() => Product)
+  @ManyToOne(() => Product)
   @JoinColumn()
   product: Product;
 }

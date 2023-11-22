@@ -1,10 +1,12 @@
 import { baseEntity } from 'src/common/entities/base.entity';
 import { Status } from 'src/constant/status.enum';
 import { OrderDetail } from 'src/resources/order_detail/entities/order_detail.entity';
+import { User } from 'src/resources/user/entities/user.entity';
 import {
   Column,
   Entity,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -20,6 +22,6 @@ export class Order extends baseEntity {
   @OneToMany(() => OrderDetail, (orderDetail) => orderDetail.order)
   orderDetail: OrderDetail[];
 
-  //   @Column({ type: 'enum', enum: Status, default: Status.Active })
-  //   status: Status;
+  @ManyToOne(() => User)
+  user: User;
 }
