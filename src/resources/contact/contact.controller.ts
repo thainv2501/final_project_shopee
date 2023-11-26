@@ -40,7 +40,7 @@ export class ContactController {
   @UseGuards(AuthGuard)
   @Get(':id')
   getContact(@Req() request: Request, @Param('id') id: string) {
-    return this.contactService.getContact({ id });
+    return this.contactService.getContact({ id }, ['user']);
   }
 
   @UseGuards(AuthGuard)

@@ -1,21 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Request } from 'express';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { OrderDetailService } from './order_detail.service';
 import { CreateOrderDetailDto } from './dto/create-order_detail.dto';
 import { UpdateOrderDetailDto } from './dto/update-order_detail.dto';
+import { AuthGuard } from 'src/auth/guard/auth.guard';
 
-@Controller('order-detail')
+@Controller('order-details')
 export class OrderDetailController {
   constructor(private readonly orderDetailService: OrderDetailService) {}
 
-  @Post()
-  create(@Body() createOrderDetailDto: CreateOrderDetailDto) {
-    return this.orderDetailService.create(createOrderDetailDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.orderDetailService.findAll();
-  }
+  // @UseGuards(AuthGuard)
+  // @Post()
+  // create(
+  //   @Req() request: Request,
+  //   @Body() createOrderDetailDto: CreateOrderDetailDto,
+  // ) {
+  //   return this.orderDetailService.create(createOrderDetailDto);
+  // }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -23,7 +34,10 @@ export class OrderDetailController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDetailDto: UpdateOrderDetailDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateOrderDetailDto: UpdateOrderDetailDto,
+  ) {
     return this.orderDetailService.update(+id, updateOrderDetailDto);
   }
 

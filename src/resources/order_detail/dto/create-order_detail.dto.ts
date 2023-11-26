@@ -1,11 +1,10 @@
-import { IsInt, IsString, Min } from 'class-validator';
-import { Order } from 'src/resources/order/entities/order.entity';
-import { Product } from 'src/resources/product/entities/product.entity';
+import { IsInt, IsString, IsUUID, Min } from 'class-validator';
 
 export class CreateOrderDetailDto {
   orderId: string;
 
   @IsString()
+  @IsUUID()
   productId: string;
 
   @IsInt()

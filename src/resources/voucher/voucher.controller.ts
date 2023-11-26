@@ -11,7 +11,7 @@ import { VoucherService } from './voucher.service';
 import { CreateVoucherDto } from './dto/create-voucher.dto';
 import { UpdateVoucherDto } from './dto/update-voucher.dto';
 
-@Controller('voucher')
+@Controller('vouchers')
 export class VoucherController {
   constructor(private readonly voucherService: VoucherService) {}
 
@@ -20,14 +20,9 @@ export class VoucherController {
     return this.voucherService.create(createVoucherDto);
   }
 
-  @Get()
-  findAll() {
-    return this.voucherService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.voucherService.getVoucher(+id);
+  @Get(':productId')
+  findOne(@Param('productId') productId: string) {
+    return this.voucherService.getVouchersOfProduct(productId);
   }
 
   @Patch(':id')

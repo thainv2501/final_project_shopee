@@ -19,7 +19,7 @@ export class Product extends baseEntity {
   @Column()
   name: string;
 
-  @Column({ type: 'money' })
+  @Column()
   price: number;
 
   @Column()
