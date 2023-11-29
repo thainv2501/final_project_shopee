@@ -19,7 +19,7 @@ export class CreateOrderDto {
   @IsUUID()
   contact: string;
 
-  // @IsString()
-  // @IsEnum(PaymentType, { message: 'Invalid payment type' })
-  // paymentType: PaymentType;
+  @IsString()
+  @IsEnum(PaymentType, { message: 'Invalid payment type' })
+  paymentType: PaymentType;
 }

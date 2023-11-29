@@ -20,6 +20,8 @@ import { OrderDetailModule } from './resources/order_detail/order_detail.module'
 import { ShoppingCartModule } from './resources/shopping_cart/shopping_cart.module';
 import { CartModule } from './resources/cart/cart.module';
 import { PaymentModule } from './resources/payment/payment.module';
+import { SaleModule } from './resources/sale/sale.module';
+import { ShipmentModule } from './resources/shipment/shipment.module';
 
 @Module({
   imports: [
@@ -46,6 +48,8 @@ import { PaymentModule } from './resources/payment/payment.module';
     OrderDetailModule,
     CartModule,
     PaymentModule,
+    SaleModule,
+    ShipmentModule,
   ],
   controllers: [AppController],
   providers: [

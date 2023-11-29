@@ -22,7 +22,7 @@ export class User extends baseEntity {
   @Column()
   email: string;
 
-  @Exclude() // This will exclude the password field from serialization
+  @Exclude()
   @Column()
   password: string;
 

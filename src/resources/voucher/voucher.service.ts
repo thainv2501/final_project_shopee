@@ -83,8 +83,7 @@ export class VoucherService {
         // if (voucher.id !== 'specificVoucherId') {
         //   throw new Error('Simulated error during voucher application');
         // }
-        applyVoucherPrice =
-          applyVoucherPrice - totalPrice * (1 - voucher.discount / 100);
+        applyVoucherPrice -= (totalPrice * voucher.discount) / 100;
         await this.voucherRepository.update(
           { id: voucher.id },
           { quantity: voucher.quantity - 1 },

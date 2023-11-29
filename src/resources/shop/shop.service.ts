@@ -1,11 +1,12 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, FindOptionsWhere, Repository } from 'typeorm';
 import { ContactService } from './../contact/contact.service';
 import { User } from './../user/entities/user.entity';
-import { FindOptionsWhere, Repository, DataSource } from 'typeorm';
-import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
 import { Shop } from './entities/shop.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+
 @Injectable()
 export class ShopService {
   constructor(

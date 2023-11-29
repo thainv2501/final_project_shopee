@@ -1,13 +1,18 @@
+import { Request } from 'express';
 import { VoucherService } from './../voucher/voucher.service';
 import { ProductService } from './../product/product.service';
 import { OrderService } from './../order/order.service';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { CreateOrderDetailDto } from './dto/create-order_detail.dto';
 import { UpdateOrderDetailDto } from './dto/update-order_detail.dto';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, FindOptionsWhere } from 'typeorm';
 import { OrderDetail } from './entities/order_detail.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateProductDto } from '../product/dto/update-product.dto';
+import { User } from '../user/entities/user.entity';
+import { SearchOrderDto } from '../sale/dto/search.orders.dto';
+import { PaymentStatus } from 'src/constant/payment.status.enum';
+import { OrderDetailStatus } from 'src/constant/order.detail.status.enum';
 
 @Injectable()
 export class OrderDetailService {
@@ -76,15 +81,144 @@ export class OrderDetailService {
     }
   }
 
+  async getOrderDetail(conditions: string[]): Promise<OrderDetail> {
+    const queryBuilder = this.orderDetailRepository
+      .createQueryBuilder('orderDetail')
+      .leftJoinAndSelect('orderDetail.order', 'order')
+      .leftJoinAndSelect('orderDetail.shop', 'shop')
+      .leftJoinAndSelect('order.user', 'user');
+
+    for (const condition of conditions) {
+      queryBuilder.andWhere(condition);
+    }
+
+    return await queryBuilder.getOne();
+  }
+
+  async getOrderDetails(conditions: string[]): Promise<OrderDetail[]> {
+    const queryBuilder = this.orderDetailRepository
+      .createQueryBuilder('orderDetail')
+      .leftJoinAndSelect('orderDetail.order', 'order')
+      .leftJoinAndSelect('orderDetail.shop', 'shop')
+      .leftJoinAndSelect('order.user', 'user');
+
+    for (const condition of conditions) {
+      queryBuilder.andWhere(condition);
+    }
+
+    return await queryBuilder.getMany();
+  }
+
+  async getOrdersOfUserOnPaymentStatus(request: Request, type) {
+    const currentUser: User = request[process.env.CURRENT_USER];
+    const searchObj = new SearchOrderDto();
+    searchObj.userId = currentUser.id;
+    const validPaymentStatusTypes = Object.values(PaymentStatus);
+    for (const status of validPaymentStatusTypes) {
+      if (type == status) {
+        searchObj.paymentStatus = status;
+        break;
+      }
+    }
+    const conditions = [`order.userId = '${searchObj.userId}'`];
+
+    if (searchObj.paymentStatus) {
+      conditions.push(
+        `orderDetail.paymentStatus = '${searchObj.paymentStatus}'`,
+      );
+    }
+
+    const order_details = await this.getOrderDetails(conditions);
+    return { order_details };
+  }
+
+  async getOrdersOfUserOnStatus(request: Request, type) {
+    const currentUser: User = request[process.env.CURRENT_USER];
+    const searchObj = new SearchOrderDto();
+    searchObj.userId = currentUser.id;
+    const validStatusTypes = Object.values(OrderDetailStatus);
+    for (const status of validStatusTypes) {
+      console.log({ status, type });
+      if (type == status) {
+        searchObj.status = status;
+        break;
+      }
+    }
+    const conditions = [`order.userId = '${searchObj.userId}'`];
+
+    if (searchObj.status) {
+      conditions.push(`orderDetail.status = '${searchObj.status}'`);
+    }
+
+    const order_details = await this.getOrderDetails(conditions);
+    return { order_details };
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} orderDetail`;
   }
 
-  update(id: number, updateOrderDetailDto: UpdateOrderDetailDto) {
-    return `This action updates a #${id} orderDetail`;
+  async userUpdateOrder(
+    request: Request,
+    id: string,
+    updateOrderDetailDto: UpdateOrderDetailDto,
+  ) {
+    const currentUser: User = request[process.env.CURRENT_USER];
+    const preconditionOfOrderDetailsStatus =
+      this.preconditionOfOrderDetailsStatus(updateOrderDetailDto.status);
+    if (!preconditionOfOrderDetailsStatus) {
+      throw new BadRequestException('Request invalid');
+    }
+    const conditions = [
+      `order.userId = '${currentUser.id}'`,
+      `orderDetail.id = '${id}'`,
+      `orderDetail.status = '${preconditionOfOrderDetailsStatus}'`,
+    ];
+
+    const orderDetail = await this.getOrderDetail(conditions);
+
+    if (!orderDetail) {
+      throw new BadRequestException();
+    }
+    return await this.update(id, updateOrderDetailDto);
+  }
+
+  async update(id: string, updateOrderDetailDto: UpdateOrderDetailDto) {
+    return await this.orderDetailRepository.update(
+      { id },
+      updateOrderDetailDto,
+    );
   }
 
   remove(id: number) {
     return `This action removes a #${id} orderDetail`;
+  }
+
+  preconditionOfOrderDetailsStatus(updateType: OrderDetailStatus) {
+    switch (updateType) {
+      case OrderDetailStatus.PickUp:
+        return OrderDetailStatus.Preparing;
+
+      case OrderDetailStatus.Shipping:
+        return OrderDetailStatus.PickUp;
+
+      case OrderDetailStatus.Shipped:
+        return OrderDetailStatus.Shipping;
+
+      case OrderDetailStatus.Done:
+        return OrderDetailStatus.Shipped;
+
+      case OrderDetailStatus.Cancel:
+        return OrderDetailStatus.Preparing;
+    }
+  }
+  preconditionOfPaymentStatus(updateType: PaymentStatus) {
+    switch (updateType) {
+      case PaymentStatus.Return:
+        return PaymentStatus.Processing;
+
+      case PaymentStatus.Processing:
+        return PaymentStatus.Paid;
+    }
   }
 }

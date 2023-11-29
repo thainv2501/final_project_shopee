@@ -1,35 +1,14 @@
-import { Type } from 'class-transformer';
-import {
-  IsEnum,
-  IsObject,
-  IsString,
-  IsUUID,
-  ValidateNested,
-} from 'class-validator';
-import { PaymentStatus } from 'src/constant/payment.status.enum';
-import { PaymentType } from 'src/constant/payment.type.enum';
-import { CreateOrderDto } from 'src/resources/order/dto/create-order.dto';
+import { IsNumber, IsUUID } from 'class-validator';
 
 export class CreatePaymentDto {
-  // @IsUUID()
-  // orderId: string;
+  @IsUUID()
+  orderId: string;
 
-  orderDetailId: string;
-
+  @IsNumber()
   value: number;
 
-  remitterId: string;
-
-  receiverId: string;
-
-  @IsObject()
-  @ValidateNested()
-  @Type(() => CreateOrderDto)
-  createOrderDto: CreateOrderDto;
-
-  @IsString()
-  @IsEnum(PaymentType, { message: 'Invalid payment type' })
-  paymentType: PaymentType;
-
-  status: PaymentStatus;
+  constructor(orderId, value) {
+    this.orderId = orderId;
+    this.value = value;
+  }
 }

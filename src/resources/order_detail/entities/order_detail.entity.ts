@@ -11,6 +11,7 @@ import { Product } from 'src/resources/product/entities/product.entity';
 import { OrderDetailStatus } from 'src/constant/order.detail.status.enum';
 import { User } from 'src/resources/user/entities/user.entity';
 import { Shop } from 'src/resources/shop/entities/shop.entity';
+import { PaymentStatus } from 'src/constant/payment.status.enum';
 
 @Entity('order_details')
 export class OrderDetail {
@@ -55,4 +56,7 @@ export class OrderDetail {
     default: OrderDetailStatus.Preparing,
   })
   status: OrderDetailStatus;
+
+  @Column({ type: 'enum', enum: PaymentStatus })
+  paymentStatus: PaymentStatus;
 }

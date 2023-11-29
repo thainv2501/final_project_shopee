@@ -1,4 +1,5 @@
 import { IsInt, IsString, IsUUID, Min } from 'class-validator';
+import { PaymentStatus } from 'src/constant/payment.status.enum';
 
 export class CreateOrderDetailDto {
   orderId: string;
@@ -12,4 +13,6 @@ export class CreateOrderDetailDto {
   quantity: number;
 
   finalPrice: number;
+
+  paymentStatus: PaymentStatus;
 }
