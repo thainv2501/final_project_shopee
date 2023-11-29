@@ -48,14 +48,13 @@ export class OrderService {
       // create specific order details
       for (const orderDetailDto of createOrderDto.order_details_dto) {
         orderDetailDto.orderId = order.id;
-
+        // try catch error when  create order details
         try {
           const { orderDetail } =
             await this.orderDetailService.create(orderDetailDto);
         } catch (error) {
-          console.log(`${error.message} at ${orderDetailDto.productId}`);
           await queryRunner.rollbackTransaction();
-          return `${error.message} at ${orderDetailDto.productId}`;
+          return { err: `${error.message} at ${orderDetailDto.productId}` };
         }
       }
 
@@ -79,7 +78,7 @@ export class OrderService {
   ) {
     return await this.orderRepository.findOne({
       where: fields,
-      relations: ['orderDetails', 'orderDetails.product'],
+      relations: ['orderDetails', 'orderDetails.product', 'orderDetails.shop'],
     });
   }
 
@@ -87,7 +86,8 @@ export class OrderService {
     return `This action updates a #${id} order`;
   }
 
-  remove(id: number) {
+  async remove(id: string) {
+    await this.orderRepository.delete({ id });
     return `This action removes a #${id} order`;
   }
 }

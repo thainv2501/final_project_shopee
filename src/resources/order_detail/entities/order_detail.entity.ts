@@ -1,24 +1,44 @@
-import { Entity, Column, ManyToOne, PrimaryColumn, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  PrimaryColumn,
+  JoinColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Order } from 'src/resources/order/entities/order.entity';
 import { Product } from 'src/resources/product/entities/product.entity';
-import { Status } from 'src/constant/status.enum';
 import { OrderDetailStatus } from 'src/constant/order.detail.status.enum';
+import { User } from 'src/resources/user/entities/user.entity';
+import { Shop } from 'src/resources/shop/entities/shop.entity';
 
 @Entity('order_details')
 export class OrderDetail {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column()
   orderId: string;
 
-  @PrimaryColumn()
+  @Column()
   productId: string;
 
-  @ManyToOne(() => Order, (order) => order.orderDetails)
+  @Column()
+  shopId: string;
+
+  @ManyToOne(() => Order, (order) => order.orderDetails, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'orderId' })
   order: Order;
 
   @ManyToOne(() => Product)
   @JoinColumn({ name: 'productId' })
   product: Product;
+
+  @ManyToOne(() => Shop)
+  @JoinColumn({ name: 'shopId' })
+  shop: Shop;
 
   @Column()
   quantity: number;

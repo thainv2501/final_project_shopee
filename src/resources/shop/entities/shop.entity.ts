@@ -25,8 +25,11 @@ export class Shop extends baseEntity {
   @JoinColumn()
   contact: Contact;
 
+  @Column()
+  ownerId: string;
+
   @OneToOne(() => User)
-  @JoinColumn()
+  @JoinColumn({ name: 'ownerId' })
   owner: User;
 
   @OneToMany(() => Product, (product) => product.shop)

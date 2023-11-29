@@ -70,7 +70,8 @@ export class VoucherService {
     const product = await this.productService.getProduct({
       id: orderDetail.productId,
     });
-    let totalPrice = product.price * orderDetail.quantity;
+    const totalPrice = product.price * orderDetail.quantity;
+    let applyVoucherPrice = totalPrice; // Assuming initialPrice is the original price before applying any voucher
     // Start transaction for voucher application
     const voucherTransaction = await this.dataSource.createQueryRunner();
     await voucherTransaction.connect();
@@ -82,14 +83,18 @@ export class VoucherService {
         // if (voucher.id !== 'specificVoucherId') {
         //   throw new Error('Simulated error during voucher application');
         // }
-        totalPrice = totalPrice * (1 - voucher.discount / 100);
+        applyVoucherPrice =
+          applyVoucherPrice - totalPrice * (1 - voucher.discount / 100);
         await this.voucherRepository.update(
           { id: voucher.id },
           { quantity: voucher.quantity - 1 },
         );
       }
       await voucherTransaction.commitTransaction();
-      return { finalPrice: totalPrice };
+      if (applyVoucherPrice < 0) {
+        applyVoucherPrice = 0;
+      }
+      return { finalPrice: applyVoucherPrice };
     } catch (error) {
       await voucherTransaction.rollbackTransaction();
       await voucherTransaction.release();

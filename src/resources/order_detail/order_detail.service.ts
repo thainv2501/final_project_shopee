@@ -23,9 +23,12 @@ export class OrderDetailService {
   ) {}
 
   async create(createOrderDetailDto: CreateOrderDetailDto) {
-    const product = await this.productService.getProduct({
-      id: createOrderDetailDto.productId,
-    });
+    const product = await this.productService.getProduct(
+      {
+        id: createOrderDetailDto.productId,
+      },
+      ['shop'],
+    );
 
     if (!product) {
       throw new BadRequestException('Product not found');
@@ -45,7 +48,8 @@ export class OrderDetailService {
 
       const orderDetail =
         this.orderDetailRepository.create(createOrderDetailDto);
-
+      orderDetail.shopId = product.shop.id;
+      //apply voucher for this product
       try {
         const { finalPrice, err } =
           await this.voucherService.applyProductVoucher(orderDetail);

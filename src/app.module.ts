@@ -19,6 +19,7 @@ import { OrderModule } from './resources/order/order.module';
 import { OrderDetailModule } from './resources/order_detail/order_detail.module';
 import { ShoppingCartModule } from './resources/shopping_cart/shopping_cart.module';
 import { CartModule } from './resources/cart/cart.module';
+import { PaymentModule } from './resources/payment/payment.module';
 
 @Module({
   imports: [
@@ -43,8 +44,8 @@ import { CartModule } from './resources/cart/cart.module';
     VoucherModule,
     OrderModule,
     OrderDetailModule,
-    // ShoppingCartModule,
     CartModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [
